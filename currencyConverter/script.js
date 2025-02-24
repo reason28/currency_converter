@@ -7,8 +7,13 @@ const dropdowns = document.querySelectorAll(".dropdown select");
 const btn = document.querySelector("form button");
 const fromCurr = document.querySelector("select[name='from']");
 const toCurr = document.querySelector("select[name='to']");
+const result = document.querySelector(".results h3");
 
-const countryList = (async () => {
+window.addEventListener("load", () => {
+  countryList();
+});
+
+const countryList = async () => {
   let response = await fetch(country_list);
   let countryList = await response.json();
 
@@ -30,7 +35,7 @@ const countryList = (async () => {
       updateFlag(evt.target);
     });
   }
-})();
+};
 
 const updateFlag = (element) => {
   let currencyCode = element.value.toUpperCase();
@@ -49,9 +54,21 @@ btn.addEventListener("click", async (evt) => {
     amtVal = 1;
     amount.value = "1";
   }
-  console.log(fromCurr.value, toCurr.value);
+
   const URL = `${BASE_URL}/${fromCurr.value}.json`;
   const response = await fetch(URL);
   const data = await response.json();
-  console.log(data);
+
+  const rate = data[fromCurr.value];
+  let toRate = "";
+
+  for (const key in rate) {
+    if (key === toCurr.value) {
+      toRate += rate[key];
+    }
+  }
+
+  result.innerHTML = `${amtVal} ${fromCurr.value.toUpperCase()} = ${
+    toRate * amtVal
+  } ${toCurr.value.toUpperCase()}`;
 });
